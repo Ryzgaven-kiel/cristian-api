@@ -9,7 +9,7 @@ This project provides a simple API interface to communicate with the BlackboxAI 
 - Maintains conversation history using unique conversation IDs.
 - Error handling for various scenarios.
 
-## Getting Started
+### Getting Started
 
 ### Prerequisites
 
