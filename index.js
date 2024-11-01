@@ -10,13 +10,6 @@ class BlackboxAI {
     };
     this.conversationHistory = {}; // Use an object to manage conversation histories by ID
     this.defaultModel = 'blackboxai'; // Default model selection
-    /*
-    Available model
-    gpt-4o
-    claude-sonnet-3.5
-    gemini-pro
-    blackboxai
-    */
   }
 
   async sendMessage(conversationId, content) {
@@ -25,30 +18,12 @@ class BlackboxAI {
       this.conversationHistory[conversationId] = [];
     }
     
-    // First message in the conversation
     const message = { id: conversationId, content, role: 'user' };
     this.conversationHistory[conversationId].push(message);
 
     const payload = {
       messages: this.conversationHistory[conversationId],
       id: conversationId,
-      previewToken: null,
-      userId: null,
-      codeModelMode: true,
-      agentMode: {},
-      trendingAgentMode: {},
-      isMicMode: false,
-      userSystemPrompt: null,
-      maxTokens: 1024,
-      playgroundTopP: 0.9,
-      playgroundTemperature: 0.5,
-      isChromeExt: false,
-      githubToken: null,
-      clickedAnswer2: false,
-      clickedAnswer3: false,
-      clickedForceWebSearch: false,
-      visitFromDelta: false,
-      mobileClient: false,
       userSelectedModel: this.model // Dynamic model selection
     };
 
@@ -58,8 +33,8 @@ class BlackboxAI {
       this.conversationHistory[conversationId].push(assistantMessage);
       return assistantMessage.content;
     } catch (error) {
-      console.error('Error communicating with Blackbox.ai:', error);
-      throw error;
+      console.error('Error communicating with Blackbox.ai:', error.message);
+      throw new Error('Failed to communicate with Blackbox.ai');
     }
   }
 
@@ -69,30 +44,12 @@ class BlackboxAI {
       throw new Error('Conversation not found');
     }
     
-    // Add user message to conversation history
     const userMessage = { id: conversationId, content, role: 'user' };
     this.conversationHistory[conversationId].push(userMessage);
 
     const payload = {
       messages: this.conversationHistory[conversationId],
       id: conversationId,
-      previewToken: null,
-      userId: null,
-      codeModelMode: true,
-      agentMode: {},
-      trendingAgentMode: {},
-      isMicMode: false,
-      userSystemPrompt: null,
-      maxTokens: 1024,
-      playgroundTopP: 0.9,
-      playgroundTemperature: 0.5,
-      isChromeExt: false,
-      githubToken: null,
-      clickedAnswer2: false,
-      clickedAnswer3: false,
-      clickedForceWebSearch: false,
-      visitFromDelta: false,
-      mobileClient: false,
       userSelectedModel: this.model // Dynamic model selection
     };
 
@@ -102,18 +59,21 @@ class BlackboxAI {
       this.conversationHistory[conversationId].push(assistantMessage);
       return assistantMessage.content;
     } catch (error) {
-      console.error('Error in continuing conversation with Blackbox.ai:', error);
-      throw error;
+      console.error('Error in continuing conversation with Blackbox.ai:', error.message);
+      throw new Error('Failed to continue conversation with Blackbox.ai');
     }
   }
 }
 
 // Create Express app
 const app = express();
-const port = 3000; // You can change this to any port you prefer
+const port = process.env.PORT || 3000; // Use environment port for hosting
 
 // Initialize BlackboxAI
 const blackboxAI = new BlackboxAI();
+
+// Middleware to parse JSON request bodies
+app.use(express.json());
 
 // Define the API endpoint
 app.get('/api/blackbox', async (req, res) => {
@@ -145,5 +105,6 @@ app.get('/api/blackbox', async (req, res) => {
 // Start the server
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
-  console.log(`API Endpoint: /api/blackbox?text=${text}&conversationId=${cId}&model=${model}`);
+  console.log(`API Endpoint: /api/blackbox?text=<your_text>&conversationId=<your_id>&model=<optional_model>`);
 });
+  
